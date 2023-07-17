@@ -11,7 +11,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 import pickle
 
-# Step 1: Load dataset and split into training and testing sets
+# Load dataset and split into training and testing sets
 data_path = r"E:\thoucentric\defect_detection\dataset\carpet\test"
 attribute_vectors_path = "../models/attribute_vectors.npy"
 
@@ -32,7 +32,7 @@ images = np.concatenate(images)
 labels = np.concatenate(labels)
 images_train, images_test, labels_train, labels_test = train_test_split(images, labels, test_size=0.2, random_state=42)
 
-# Step 2: Extract features using VGG16 model
+# Extract features using VGG16 model
 base_model = VGG16(weights='imagenet')
 model = Model(inputs=base_model.input, outputs=base_model.get_layer('fc2').output)
 
@@ -56,14 +56,14 @@ for img_path in images_test:
 
 features_test = np.array(features_test)
 
-# Step 3: Train ZSL classifier using Logistic Regression
+# Train ZSL classifier using Logistic Regression
 classifier = LogisticRegression(multi_class='ovr')
 classifier.fit(features_train, labels_train)
 
-# Step 4: Predict labels for testing set
+# Predict labels for testing set
 predicted_labels = classifier.predict(features_test)
 
-# Step 5: Evaluate performance
+# Evaluate performance
 accuracy = accuracy_score(labels_test, predicted_labels)
 precision = precision_score(labels_test, predicted_labels, average='macro')
 recall = recall_score(labels_test, predicted_labels, average='macro')
@@ -74,7 +74,7 @@ print("Precision:", precision)
 print("Recall:", recall)
 print("F1 Score:", f1)
 
-# Step 6: Fine-tune and optimize the ZSL classifier as needed.
+# Fine-tune and optimize the ZSL classifier as needed.
 
 # Define the parameter grid for hyperparameter optimization
 param_grid = {
@@ -99,7 +99,7 @@ best_svm = SVC(**best_params)
 # Train the ZSL classifier with the best hyperparameters
 best_svm.fit(features_train, labels_train)
 
-# Step 7: Evaluate performance of the fine-tuned classifier
+# Evaluate performance of the fine-tuned classifier
 predicted_labels = best_svm.predict(features_test)
 
 accuracy = accuracy_score(labels_test, predicted_labels)

@@ -2,6 +2,7 @@
 
 Run detection code in terminal "python detection.py --input_image path_to_input_image --model (fsl or zsl)
 --model default will be zsl
+
 '''
 
 from absl import app, flags, logging
