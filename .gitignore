@@ -1,0 +1,13 @@
+#Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+#Datasets
+.git
+.idea
+dataset/
+
+
