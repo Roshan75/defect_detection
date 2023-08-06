@@ -1,4 +1,3 @@
-
 import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.applications.vgg16 import VGG16
@@ -12,11 +11,7 @@ from sklearn.svm import SVC
 import pickle
 
 # Load dataset and split into training and testing sets
-data_path = r"E:\thoucentric\defect_detection\dataset\carpet\test"
-attribute_vectors_path = "../models/attribute_vectors.npy"
-
-# Load attribute vectors
-attribute_vectors = np.load(attribute_vectors_path)
+data_path = r"..\dataset\carpet\test"
 
 # Split the dataset into training and testing sets
 images = []
@@ -77,40 +72,47 @@ print("F1 Score:", f1)
 # Fine-tune and optimize the ZSL classifier as needed.
 
 # Define the parameter grid for hyperparameter optimization
+# param_grid = {
+#     'C': [1, 10, 100],
+#     'gamma': [0.1, 0.01, 0.001],
+#     'kernel': ['rbf', 'linear']
+# }
+
 param_grid = {
-    'C': [1, 10, 100],
-    'gamma': [0.1, 0.01, 0.001],
-    'kernel': ['rbf', 'linear']
+    'C': [0.1, 1, 10],         # Regularization strength
+    'penalty': ['l1', 'l2']    # Regularization type (L1 or L2)
 }
 
 # Initialize the SVM classifier
-svm = SVC()
+#svm = SVC()
+lr = LogisticRegression()
 
 # Perform hyperparameter optimization using GridSearchCV
-grid_search = GridSearchCV(svm, param_grid, cv=5)
+grid_search = GridSearchCV(lr, param_grid, cv=5)
 grid_search.fit(features_train, labels_train)
 
 # Get the best hyperparameters
 best_params = grid_search.best_params_
 
 # Initialize the optimized SVM classifier
-best_svm = SVC(**best_params)
+#best_svm = SVC(**best_params)
+best_lr = LogisticRegression(**best_params)
 
 # Train the ZSL classifier with the best hyperparameters
-best_svm.fit(features_train, labels_train)
+best_lr.fit(features_train, labels_train)
 
 # Evaluate performance of the fine-tuned classifier
-predicted_labels = best_svm.predict(features_test)
+predicted_labels = best_lr.predict(features_test)
 
 accuracy = accuracy_score(labels_test, predicted_labels)
 precision = precision_score(labels_test, predicted_labels, average='macro')
 recall = recall_score(labels_test, predicted_labels, average='macro')
 f1 = f1_score(labels_test, predicted_labels, average='macro')
 
-with open("../models/best_svm_model.pkl", "wb") as file:
-    pickle.dump(best_svm, file)
+with open("../models/best_lr_model.pkl", "wb") as file:
+    pickle.dump(best_lr, file)
 
-print("Fine-tuned ZSL Classifier Metrics:")
+print("Fine-tuned ZSL Classifier Metrics After Hypertuning:")
 print("Accuracy:", accuracy)
 print("Precision:", precision)
 print("Recall:", recall)
